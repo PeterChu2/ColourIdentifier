@@ -4,5 +4,7 @@
     <string name="app_name">ColourIdentifier</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="flash_off">Flash: Off</string>
+    <string name="flash_on">Flash: On</string>
 
 </resources>

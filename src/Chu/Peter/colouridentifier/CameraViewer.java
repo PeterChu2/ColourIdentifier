@@ -9,13 +9,16 @@ import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PreviewCallback;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View.OnTouchListener;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 public class CameraViewer extends Activity{
 	private static final String TAG = "CAMERA_VIEWER"; // for logging errors
@@ -26,16 +29,18 @@ public class CameraViewer extends Activity{
 	private List<Camera.Size> sizes; // supported preview sizes for camera
 	private CameraTouchListener touchListener;
 	private Circle circle;
-	private FrameLayout fl;
-	
+	private ToggleButton button1;
 	
 	@Override
 	public void onCreate(Bundle bundle)
 	{
 		super.onCreate(bundle);
 		setContentView(R.layout.camera_viewer);
-		
+		circle=new Circle(this);
+		FrameLayout fl = (FrameLayout)findViewById(R.id.frameLayout);
+		fl.addView((View) circle);
 		//initialize surfaceview + set its holder
+		touchListener=new CameraTouchListener(circle);
 		surfaceView=(SurfaceView) findViewById(R.id.cameraSurfaceView);
 		surfaceView.setOnTouchListener(touchListener);
 		
@@ -45,7 +50,7 @@ public class CameraViewer extends Activity{
 		
 		//for android versions before 3.0
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-		
+		button1=(ToggleButton) findViewById(R.id.button1);
 		
 	}
 	
@@ -93,21 +98,37 @@ public class CameraViewer extends Activity{
 		 public void surfaceCreated(SurfaceHolder sh)
 		 {
 			 camera=Camera.open();
+			 
+			 Camera.Parameters cameraParam = camera.getParameters();
+			 //cameraParam.setFlashMode(Parameters.FLASH_MODE_TORCH);
 			 camera.setDisplayOrientation(90);
-			 sizes = camera.getParameters().getSupportedPreviewSizes();  
+			 sizes = cameraParam.getSupportedPreviewSizes();  
+			 camera.setParameters(cameraParam);
 			 camera.setPreviewCallback(new PreviewCallback() {
 				    @Override
 				    public void onPreviewFrame(byte[] data, Camera camera) {
+				    	Camera.Parameters cameraParam = camera.getParameters();
+				    	if(button1.isChecked())
+				    	{
+				    		cameraParam.setFlashMode(Parameters.FLASH_MODE_TORCH);
+				    	}
+				    	else
+				    	{
+				    		cameraParam.setFlashMode(Parameters.FLASH_MODE_OFF);
+				    	}
+				    	
+				    	camera.setParameters(cameraParam);
+				    	
 				        int frameHeight = camera.getParameters().getPreviewSize().height;
 				        int frameWidth = camera.getParameters().getPreviewSize().width;
 				        // number of pixels//transforms NV21 pixel data into RGB pixels  
 				        int rgb[] = new int[frameWidth * frameHeight];
-				        // convertion
+				        // conversion
 				        //int[] myPixels = decodeYUV420SP(rgb, data, frameWidth, frameHeight);
+				        
 				    }
 				});
-			 Camera.Parameters cameraParam = camera.getParameters();
-			 cameraParam.setFlashMode(Parameters.FLASH_MODE_TORCH);
+			 
 			 camera.startPreview();
 		 }
 		 
@@ -124,6 +145,20 @@ public class CameraViewer extends Activity{
 		 @Override
 		 public void surfaceChanged(SurfaceHolder sh, int format, int width, int height)
 		 {
+			 WindowManager mWindowManager =  (WindowManager) getSystemService(WINDOW_SERVICE);
+			 Display mDisplay = mWindowManager.getDefaultDisplay();
+			 if(mDisplay.getRotation()==0)
+			 {
+				 camera.setDisplayOrientation(90);
+			 }
+			 else if(mDisplay.getRotation()==3)
+			 {
+				 camera.setDisplayOrientation(180);
+			 }
+			 else
+			 {
+				 camera.setDisplayOrientation(0);
+			 }
 			 if(isPreviewing)
 			 {
 				 camera.stopPreview();
@@ -147,7 +182,9 @@ public class CameraViewer extends Activity{
 		 
 	 };//ends sh declaration
 	 
-	 
+	 public static void PlaceCursor(int x, int y){
+		 
+	 }
 	 
 	 
 }

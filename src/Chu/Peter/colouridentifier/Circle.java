@@ -8,6 +8,8 @@ import android.view.View;
 
 public class Circle extends View {
     Paint p=new Paint();
+    int x_coord=0;
+    int y_coord=0;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -15,12 +17,28 @@ public class Circle extends View {
         //Bitmap b=BitmapFactory.decodeResource(getResources(), R.drawable.icon);
         p.setColor(Color.RED);
         p.setAlpha(200);
-        canvas.drawCircle(100, 100, 10, p);
+        canvas.drawCircle(x_coord, y_coord, 20, p);
     }
 
     public Circle(Context context) {
         super(context);
     }
     
+    
+    public void setx(int x){
+    	x_coord=x;
+    }
+    public void sety(int y)
+    {
+    	y_coord=y;
+    }
+    public int getx()
+    {
+    	return x_coord;
+    }
+    public int gety()
+    {
+    	return y_coord;
+    }
     
 }
