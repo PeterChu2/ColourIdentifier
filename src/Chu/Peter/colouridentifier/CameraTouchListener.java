@@ -7,7 +7,6 @@ import android.view.View.OnTouchListener;
 public class CameraTouchListener implements OnTouchListener{
 
 	private Circle circle;
-	private Canvas canvas=new Canvas();
 	public CameraTouchListener(Circle circle) {
 		this.circle=circle;
 	}
@@ -18,9 +17,7 @@ public class CameraTouchListener implements OnTouchListener{
 		String TAG = "COORDINATE";
 
 		circle.setx((int) event.getX());
-		circle.sety((int) event.getY());
-
-		circle.draw(canvas);
+		circle.sety((int) event.getY());	
 
 		//maxX = (float)view.getWidth();
 		//maxY = (float)view.getHeight();

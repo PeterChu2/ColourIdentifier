@@ -7,12 +7,23 @@
 	   android:id="@+id/cameraSurfaceView" android:layout_width="match_parent"
 	   android:layout_height="match_parent">
 	</SurfaceView>
-
+	<RelativeLayout
+	    android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+	    >
 	<ToggleButton
 	    android:id="@+id/button1"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:textOff="@string/flash_off"
 	    android:textOn="@string/flash_on" />
+
+	<ZoomControls
+	    android:id="@+id/zoomControls"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentRight="true" />
+	</RelativeLayout>
 
 </FrameLayout>

@@ -12,7 +12,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
         Intent takePicture =
-                new Intent(MainActivity.this, CameraViewer.class);
+        		new Intent(MainActivity.this, CameraViewer.class);
     
              startActivityForResult(takePicture, 1); 
 	}

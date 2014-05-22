@@ -17,8 +17,10 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.widget.ZoomControls;
 
 public class CameraViewer extends Activity{
 	private static final String TAG = "CAMERA_VIEWER"; // for logging errors
@@ -30,6 +32,10 @@ public class CameraViewer extends Activity{
 	private CameraTouchListener touchListener;
 	private Circle circle;
 	private ToggleButton button1;
+	private SeekBar zoomLevel;
+	private ZoomControls zoomControls;
+	private int zoom=5;
+	private int maxZoom;
 	
 	@Override
 	public void onCreate(Bundle bundle)
@@ -51,6 +57,10 @@ public class CameraViewer extends Activity{
 		//for android versions before 3.0
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		button1=(ToggleButton) findViewById(R.id.button1);
+		
+		zoomControls= (ZoomControls) findViewById(R.id.zoomControls);
+		
+		
 		
 	}
 	
@@ -99,11 +109,40 @@ public class CameraViewer extends Activity{
 		 {
 			 camera=Camera.open();
 			 
-			 Camera.Parameters cameraParam = camera.getParameters();
-			 //cameraParam.setFlashMode(Parameters.FLASH_MODE_TORCH);
+			 final Camera.Parameters cameraParam = camera.getParameters();
 			 camera.setDisplayOrientation(90);
 			 sizes = cameraParam.getSupportedPreviewSizes();  
 			 camera.setParameters(cameraParam);
+			 maxZoom=cameraParam.getMaxZoom();
+			 zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+
+						if(zoom>maxZoom-2)
+						{
+							zoom=maxZoom;
+						}
+						
+						else{zoom+=2;}
+						cameraParam.setZoom(zoom);
+						camera.setParameters(cameraParam);
+					}
+				});
+			zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+
+						if(zoom<2)
+						{
+							zoom=0;
+						}
+						
+						else{zoom-=2;}
+						cameraParam.setZoom(zoom);
+						camera.setParameters(cameraParam);
+					}
+				});
+			 
 			 camera.setPreviewCallback(new PreviewCallback() {
 				    @Override
 				    public void onPreviewFrame(byte[] data, Camera camera) {

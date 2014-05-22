@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.view.View;
 
 public class Circle extends View {
@@ -16,6 +17,8 @@ public class Circle extends View {
         super.onDraw(canvas);
         //Bitmap b=BitmapFactory.decodeResource(getResources(), R.drawable.icon);
         p.setColor(Color.RED);
+        p.setStyle(Style.STROKE);
+        p.setStrokeWidth((float) 5.0);
         p.setAlpha(200);
         canvas.drawCircle(x_coord, y_coord, 20, p);
     }
@@ -31,6 +34,7 @@ public class Circle extends View {
     public void sety(int y)
     {
     	y_coord=y;
+    	this.invalidate();
     }
     public int getx()
     {
