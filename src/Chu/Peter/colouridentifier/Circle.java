@@ -8,14 +8,13 @@ import android.graphics.Paint.Style;
 import android.view.View;
 
 public class Circle extends View {
-    Paint p=new Paint();
-    int x_coord=0;
-    int y_coord=0;
+    private Paint p=new Paint();
+    private int x_coord=0;
+    private int y_coord=0;
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //Bitmap b=BitmapFactory.decodeResource(getResources(), R.drawable.icon);
         p.setColor(Color.RED);
         p.setStyle(Style.STROKE);
         p.setStrokeWidth((float) 5.0);

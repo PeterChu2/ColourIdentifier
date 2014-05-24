@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.ZoomControls;
@@ -32,10 +33,11 @@ public class CameraViewer extends Activity{
 	private CameraTouchListener touchListener;
 	private Circle circle;
 	private ToggleButton button1;
-	private SeekBar zoomLevel;
 	private ZoomControls zoomControls;
 	private int zoom=5;
 	private int maxZoom;
+	private ColourBox colourBox;
+	private TextView colourText;
 	
 	@Override
 	public void onCreate(Bundle bundle)
@@ -43,6 +45,7 @@ public class CameraViewer extends Activity{
 		super.onCreate(bundle);
 		setContentView(R.layout.camera_viewer);
 		circle=new Circle(this);
+		colourBox=(ColourBox)findViewById(R.id.colourBox);
 		FrameLayout fl = (FrameLayout)findViewById(R.id.frameLayout);
 		fl.addView((View) circle);
 		//initialize surfaceview + set its holder
@@ -58,12 +61,12 @@ public class CameraViewer extends Activity{
 		surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 		button1=(ToggleButton) findViewById(R.id.button1);
 		
-		zoomControls= (ZoomControls) findViewById(R.id.zoomControls);
-		
+		zoomControls = (ZoomControls) findViewById(R.id.zoomControls);
+		colourText = (TextView) findViewById(R.id.colourText);
 		
 		
 	}
-	
+
 	@Override
 	protected void onPause() {
 	    super.onPause();
@@ -220,10 +223,5 @@ public class CameraViewer extends Activity{
 		 }
 		 
 	 };//ends sh declaration
-	 
-	 public static void PlaceCursor(int x, int y){
-		 
-	 }
-	 
 	 
 }
