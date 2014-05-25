@@ -1,5 +1,4 @@
 package Chu.Peter.colouridentifier;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,7 +16,7 @@ public class Circle extends View {
     Display display;
     WindowManager wm;
     Point startingPoint;
-
+    
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -27,27 +26,9 @@ public class Circle extends View {
         p.setAlpha(200);
         canvas.drawCircle(x_coord, y_coord, 20, p);
     }
-
     public Circle(Context context) {
         super(context);
-        wm= (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        display= wm.getDefaultDisplay();
-        //place the cursor in the centre of the screen initially
-        //api >=13 uses getSize, api <13 uses getWidth(), getHeight()
-        if (android.os.Build.VERSION.SDK_INT >= 13){
-        	startingPoint=new Point();
-        	display.getSize(startingPoint);
-        	this.setx(startingPoint.x/2);
-        	this.sety(startingPoint.y/2);
-        }
-        else{
-        	this.setx(display.getWidth()/2);
-        	this.sety(display.getHeight()/2);
-        }
-        
     }
-    
-    
     public void setx(int x){
     	x_coord=x;
     }
@@ -64,5 +45,4 @@ public class Circle extends View {
     {
     	return y_coord;
     }
-    
 }
