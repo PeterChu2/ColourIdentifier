@@ -17,7 +17,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -187,6 +186,7 @@ public class CameraViewer extends Activity{
 		 @Override
 		 public void surfaceChanged(SurfaceHolder sh, int format, int width, int height)
 		 {
+			 //determine screen orientation and adjust the camera display accordingly
 			 WindowManager mWindowManager =  (WindowManager) getSystemService(WINDOW_SERVICE);
 			 Display mDisplay = mWindowManager.getDefaultDisplay();
 			 if(mDisplay.getRotation()==0)
