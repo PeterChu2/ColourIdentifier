@@ -1,0 +1,109 @@
+[1mdiff --git a/bin/ColourIdentifier.apk b/bin/ColourIdentifier.apk[m
+[1mindex 6e1e300..136e0f5 100644[m
+Binary files a/bin/ColourIdentifier.apk and b/bin/ColourIdentifier.apk differ
+[1mdiff --git a/bin/classes.dex b/bin/classes.dex[m
+[1mindex 7acf1e0..accbe2d 100644[m
+Binary files a/bin/classes.dex and b/bin/classes.dex differ
+[1mdiff --git a/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$1.class b/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$1.class[m
+[1mindex a0778d4..f1749b7 100644[m
+Binary files a/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$1.class and b/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$1.class differ
+[1mdiff --git a/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$2.class b/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$2.class[m
+[1mindex ab7dce0..fee71ea 100644[m
+Binary files a/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$2.class and b/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$2.class differ
+[1mdiff --git a/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$3.class b/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$3.class[m
+[1mindex 3506489..b909457 100644[m
+Binary files a/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$3.class and b/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1$3.class differ
+[1mdiff --git a/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1.class b/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1.class[m
+[1mindex 19a2e9c..44371ff 100644[m
+Binary files a/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1.class and b/bin/classes/Chu/Peter/colouridentifier/CameraViewer$1.class differ
+[1mdiff --git a/bin/classes/Chu/Peter/colouridentifier/CameraViewer.class b/bin/classes/Chu/Peter/colouridentifier/CameraViewer.class[m
+[1mindex 2b822af..4da153b 100644[m
+Binary files a/bin/classes/Chu/Peter/colouridentifier/CameraViewer.class and b/bin/classes/Chu/Peter/colouridentifier/CameraViewer.class differ
+[1mdiff --git a/bin/classes/Chu/Peter/colouridentifier/MainActivity.class b/bin/classes/Chu/Peter/colouridentifier/MainActivity.class[m
+[1mindex 6177f90..e8d9483 100644[m
+Binary files a/bin/classes/Chu/Peter/colouridentifier/MainActivity.class and b/bin/classes/Chu/Peter/colouridentifier/MainActivity.class differ
+[1mdiff --git a/bin/resources.ap_ b/bin/resources.ap_[m
+[1mindex ea34352..1d43030 100644[m
+Binary files a/bin/resources.ap_ and b/bin/resources.ap_ differ
+[1mdiff --git a/src/Chu/Peter/colouridentifier/CameraViewer.java b/src/Chu/Peter/colouridentifier/CameraViewer.java[m
+[1mindex e9e33e8..3d540d2 100644[m
+[1m--- a/src/Chu/Peter/colouridentifier/CameraViewer.java[m
+[1m+++ b/src/Chu/Peter/colouridentifier/CameraViewer.java[m
+[36m@@ -9,6 +9,7 @@[m [mimport android.graphics.Point;[m
+ import android.hardware.Camera;[m
+ import android.hardware.Camera.Parameters;[m
+ import android.hardware.Camera.PreviewCallback;[m
+[32m+[m[32mimport android.os.AsyncTask;[m
+ import android.os.Bundle;[m
+ import android.util.Log;[m
+ import android.view.Display;[m
+[36m@@ -41,6 +42,9 @@[m [mpublic class CameraViewer extends Activity{[m
+ 	private TextView colourText;[m
+ 	private Camera.Parameters cparams;[m
+ 	private Point startingPoint;[m
+[32m+[m	[32mprivate String rawsql;[m
+[32m+[m	[32mQueryColour qc = new QueryColour(this);[m
+[32m+[m[32m//	QueryColour queryColour;[m
+ 	[m
+ 	@Override[m
+ 	public void onCreate(Bundle bundle)[m
+[36m@@ -214,4 +218,26 @@[m [mpublic class CameraViewer extends Activity{[m
+ 	         isPreviewing = true;[m
+ 		 }[m
+ 	 };//ends sh declaration[m
+[32m+[m[41m	 [m
+[32m+[m	[32m //async task to query the color name[m
+[32m+[m[32m//	 private class QueryColour extends AsyncTask<String, String, String>{[m
+[32m+[m[32m//			@Override[m
+[32m+[m[32m//			Context c;[m
+[32m+[m[32m//			public QueryColour(Context c)[m
+[32m+[m[32m//			{[m
+[32m+[m[32m//				this.c=c;[m
+[32m+[m[32m//			}[m
+[32m+[m[32m//			protected String doInBackground(String... params) {[m
+[32m+[m[32m//				// TODO Auto-generated method stub[m
+[32m+[m[32m//				String colourname;[m
+[32m+[m[32m//				ExternalDbOpenHelper mydb = new ExternalDbOpenHelper(this.c, "rgbvaluesdb");[m
+[32m+[m[32m//				return colourname;[m
+[32m+[m[32m//			}[m
+[32m+[m[32m//			protected void onProgressUpdate(String... progress) {[m
+[32m+[m[32m//		    }[m
+[32m+[m[32m//[m
+[32m+[m[32m//		    protected void onPostExecute(String result) {[m
+[32m+[m[32m//		    }[m
+[32m+[m[32m//[m
+[32m+[m[32m//		}[m
+ }[m
+[1mdiff --git a/src/Chu/Peter/colouridentifier/MainActivity.java b/src/Chu/Peter/colouridentifier/MainActivity.java[m
+[1mindex d1d928f..9d8b39d 100644[m
+[1m--- a/src/Chu/Peter/colouridentifier/MainActivity.java[m
+[1m+++ b/src/Chu/Peter/colouridentifier/MainActivity.java[m
+[36m@@ -1,12 +1,13 @@[m
+ package Chu.Peter.colouridentifier;[m
+ [m
+ import android.app.Activity;[m
+[32m+[m[32mimport android.content.Context;[m
+ import android.content.Intent;[m
+[32m+[m[32mimport android.os.AsyncTask;[m
+ import android.os.Bundle;[m
+ import android.view.Menu;[m
+ [m
+ public class MainActivity extends Activity {[m
+[31m-[m
+ 	@Override[m
+ 	protected void onCreate(Bundle savedInstanceState) {[m
+ 		super.onCreate(savedInstanceState);[m
+[36m@@ -16,12 +17,10 @@[m [mpublic class MainActivity extends Activity {[m
+ [m
+ 		startActivityForResult(takePicture, 1); [m
+ 	}[m
+[31m-[m
+ 	@Override[m
+ 	public boolean onCreateOptionsMenu(Menu menu) {[m
+ 		// Inflate the menu; this adds items to the action bar if it is present.[m
+ 		getMenuInflater().inflate(R.menu.main, menu);[m
+ 		return true;[m
+ 	}[m
+[31m-[m
+ }[m
+\ No newline at end of file[m

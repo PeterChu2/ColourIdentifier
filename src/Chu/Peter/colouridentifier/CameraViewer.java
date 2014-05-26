@@ -9,6 +9,7 @@ import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PreviewCallback;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -41,6 +42,9 @@ public class CameraViewer extends Activity{
 	private TextView colourText;
 	private Camera.Parameters cparams;
 	private Point startingPoint;
+	private String rawsql;
+	QueryColour qc = new QueryColour(this);
+//	QueryColour queryColour;
 	
 	@Override
 	public void onCreate(Bundle bundle)
@@ -214,4 +218,26 @@ public class CameraViewer extends Activity{
 	         isPreviewing = true;
 		 }
 	 };//ends sh declaration
+	 
+	 //async task to query the color name
+//	 private class QueryColour extends AsyncTask<String, String, String>{
+//			@Override
+//			Context c;
+//			public QueryColour(Context c)
+//			{
+//				this.c=c;
+//			}
+//			protected String doInBackground(String... params) {
+//				// TODO Auto-generated method stub
+//				String colourname;
+//				ExternalDbOpenHelper mydb = new ExternalDbOpenHelper(this.c, "rgbvaluesdb");
+//				return colourname;
+//			}
+//			protected void onProgressUpdate(String... progress) {
+//		    }
+//
+//		    protected void onPostExecute(String result) {
+//		    }
+//
+//		}
 }
