@@ -3,6 +3,7 @@ package Chu.Peter.colouridentifier;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class QueryColour implements Runnable{
 	Context c;
@@ -14,16 +15,21 @@ public class QueryColour implements Runnable{
 	{
 		this.c=c;
 	}
-	public void SetRawSQL(String rawsql)
+	public void setRawSQL(int r, int g, int b)
 	{
-		this.rawsql=rawsql;
+		this.rawsql=String.format("SELECT text FROM RGBValues WHERE red=%d and green=%d and blue=%d", r, g, b);
+		Log.d("TESTSQL", rawsql);
 	}
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		dbHelper=new ExternalDbOpenHelper(c,"rgbvaluesdb");
-		db=dbHelper.getDb();
+		if(db==null)
+		{
+			dbHelper=new ExternalDbOpenHelper(c,"RGBValues");
+			db=dbHelper.getDb();
+		}
 		cursor=db.rawQuery(rawsql, null);
+//		Log.d("COLOUR", cursor.getString(0));
 	}
 	
 }

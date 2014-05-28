@@ -43,7 +43,8 @@ public class CameraViewer extends Activity{
 	private Camera.Parameters cparams;
 	private Point startingPoint;
 	private String rawsql;
-	QueryColour qc = new QueryColour(this);
+	QueryColour queryColour = new QueryColour(this);
+	Thread qc;
 //	QueryColour queryColour;
 	
 	@Override
@@ -153,8 +154,11 @@ public class CameraViewer extends Activity{
 				    	
 				        int frameHeight = camera.getParameters().getPreviewSize().height;
 				        int frameWidth = camera.getParameters().getPreviewSize().width;
+				        queryColour.setRawSQL(10,10,10);
+				        qc=new Thread(queryColour);
+				        qc.start();
 				        // number of pixels//transforms NV21 pixel data into RGB pixels  
-				        int rgb[] = new int[frameWidth * frameHeight];
+				        // int rgb[] = new int[frameWidth * frameHeight];
 				        // conversion
 				        //int[] myPixels = decodeYUV420SP(rgb, data, frameWidth, frameHeight);   
 				    }

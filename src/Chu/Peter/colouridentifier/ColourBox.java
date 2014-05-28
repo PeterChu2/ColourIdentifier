@@ -7,7 +7,6 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
-
 public class ColourBox extends View{
 	private Paint p=new Paint();
 	private Paint borderp=new Paint();
