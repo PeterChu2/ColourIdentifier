@@ -4,12 +4,10 @@ import java.io.IOException;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PreviewCallback;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -21,7 +19,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.ZoomControls;
 
@@ -43,9 +40,8 @@ public class CameraViewer extends Activity{
 	private Camera.Parameters cparams;
 	private Point startingPoint;
 	private String rawsql;
-	QueryColour queryColour = new QueryColour(this);
+	QueryColour queryColour;
 	Thread qc;
-//	QueryColour queryColour;
 	
 	@Override
 	public void onCreate(Bundle bundle)
@@ -68,6 +64,7 @@ public class CameraViewer extends Activity{
 		button1=(ToggleButton) findViewById(R.id.button1);
 		zoomControls = (ZoomControls) findViewById(R.id.zoomControls);
 		colourText = (TextView) findViewById(R.id.colourText);
+		queryColour = new QueryColour(this);
 	}
 	@Override
 	protected void onPause() {
@@ -154,13 +151,16 @@ public class CameraViewer extends Activity{
 				    	
 				        int frameHeight = camera.getParameters().getPreviewSize().height;
 				        int frameWidth = camera.getParameters().getPreviewSize().width;
-				        queryColour.setRawSQL(10,10,10);
+				        queryColour.createRawSQL(data, frameWidth, frameHeight, circle.getx(), circle.gety());
 				        qc=new Thread(queryColour);
 				        qc.start();
-				        // number of pixels//transforms NV21 pixel data into RGB pixels  
-				        // int rgb[] = new int[frameWidth * frameHeight];
-				        // conversion
-				        //int[] myPixels = decodeYUV420SP(rgb, data, frameWidth, frameHeight);   
+				        colourText.setText(queryColour.getText());
+				        try {
+							qc.join();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 				    }
 				});
 		 }
@@ -222,26 +222,4 @@ public class CameraViewer extends Activity{
 	         isPreviewing = true;
 		 }
 	 };//ends sh declaration
-	 
-	 //async task to query the color name
-//	 private class QueryColour extends AsyncTask<String, String, String>{
-//			@Override
-//			Context c;
-//			public QueryColour(Context c)
-//			{
-//				this.c=c;
-//			}
-//			protected String doInBackground(String... params) {
-//				// TODO Auto-generated method stub
-//				String colourname;
-//				ExternalDbOpenHelper mydb = new ExternalDbOpenHelper(this.c, "rgbvaluesdb");
-//				return colourname;
-//			}
-//			protected void onProgressUpdate(String... progress) {
-//		    }
-//
-//		    protected void onPostExecute(String result) {
-//		    }
-//
-//		}
 }
