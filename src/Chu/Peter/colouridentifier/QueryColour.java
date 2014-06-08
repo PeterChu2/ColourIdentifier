@@ -62,6 +62,9 @@ public class QueryColour implements Runnable{
 	}
 	public void createRawSQL(byte[] data, int width, int height, int x, int y)
 	{
+		Log.d("DATALENGTH", Integer.toString(data.length));
+		Log.d("WIDTH", Integer.toString(width));
+		Log.d("HEIGHT", Integer.toString(height));
 		this.setRawSQL((int)(Math.random()*256),(int)(Math.random()*256),(int)(Math.random()*256));
 	}
 }

@@ -1,8 +1,6 @@
 package Chu.Peter.colouridentifier;
 
 import java.io.IOException;
-import java.util.List;
-
 import android.app.Activity;
 import android.graphics.Point;
 import android.hardware.Camera;
@@ -28,7 +26,6 @@ public class CameraViewer extends Activity{
 	private SurfaceHolder surfaceHolder; // manages SurfaceView changes
 	private boolean isPreviewing; // true if camera preview is on
 	private Camera camera; // captures image data
-	private List<Camera.Size> sizes; // supported preview sizes for camera
 	private CameraTouchListener touchListener;
 	private Circle circle;
 	private ToggleButton button1;
@@ -39,7 +36,6 @@ public class CameraViewer extends Activity{
 	private TextView colourText;
 	private Camera.Parameters cparams;
 	private Point startingPoint;
-	private String rawsql;
 	QueryColour queryColour;
 	Thread qc;
 	
@@ -105,7 +101,6 @@ public class CameraViewer extends Activity{
 			 camera=Camera.open();
 			 cparams = camera.getParameters();
 			 camera.setDisplayOrientation(90);
-			 sizes = cparams.getSupportedPreviewSizes();  
 			 camera.setParameters(cparams);
 			 maxZoom=cparams.getMaxZoom();
 			 zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
@@ -207,9 +202,6 @@ public class CameraViewer extends Activity{
 			 {
 				 camera.stopPreview();
 			 }
-			 Camera.Parameters parameters=camera.getParameters();
-			 parameters.setPreviewSize(sizes.get(0).width, sizes.get(0).height);
-			 camera.setParameters(parameters);
 			 try 
 	         {
 	            camera.setPreviewDisplay(sh); // display using holder

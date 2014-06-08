@@ -1,5 +1,4 @@
 package Chu.Peter.colouridentifier;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -12,9 +11,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		Intent takePicture =
-				new Intent(MainActivity.this, CameraViewer.class);
-
+		Intent takePicture = new Intent(MainActivity.this, CameraViewer.class);
 		startActivityForResult(takePicture, 1); 
 	}
 	@Override

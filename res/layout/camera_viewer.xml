@@ -11,8 +11,6 @@
 	    android:layout_width="match_parent"
     	android:layout_height="match_parent"
 	    >
-		
-	
 		<ZoomControls
 		    android:id="@+id/zoomControls"
 		    android:layout_width="wrap_content"
@@ -27,16 +25,11 @@
 			    android:textOn="@string/flash_on"
 			    android:layout_alignParentBottom="true"
 		    	android:layout_alignParentLeft="true"  />
-
 		<LinearLayout
 		    android:layout_width="match_parent"
 		    android:layout_height="50dp"
 		    android:layout_alignParentTop="true"
 		    android:background="#FFFF00">
-		    
-
-
-
 			    <TextView
 			        android:id="@+id/colourText"
 			        android:layout_width="0dp"
@@ -44,7 +37,6 @@
 			        android:layout_weight="4"
 			        style="@style/colourTextShadow"
 			        android:gravity="center"/>
-		
 				<Chu.Peter.colouridentifier.ColourBox
 				    android:id="@+id/colourBox"
 				    android:layout_width="0dp"
@@ -53,10 +45,6 @@
 				    android:layout_marginRight="5dp"
 				    android:layout_weight="1"
 				    android:paddingRight="5dp" />
-		
 		</LinearLayout>
 	</RelativeLayout>
-	
-
-
 </FrameLayout>
