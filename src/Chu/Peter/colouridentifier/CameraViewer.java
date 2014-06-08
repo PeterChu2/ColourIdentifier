@@ -1,15 +1,11 @@
 package Chu.Peter.colouridentifier;
 
 import java.io.IOException;
-import java.util.List;
-
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PreviewCallback;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -21,7 +17,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.ZoomControls;
 
@@ -31,7 +26,6 @@ public class CameraViewer extends Activity{
 	private SurfaceHolder surfaceHolder; // manages SurfaceView changes
 	private boolean isPreviewing; // true if camera preview is on
 	private Camera camera; // captures image data
-	private List<Camera.Size> sizes; // supported preview sizes for camera
 	private CameraTouchListener touchListener;
 	private Circle circle;
 	private ToggleButton button1;
@@ -42,9 +36,8 @@ public class CameraViewer extends Activity{
 	private TextView colourText;
 	private Camera.Parameters cparams;
 	private Point startingPoint;
-	private String rawsql;
-	QueryColour qc = new QueryColour(this);
-//	QueryColour queryColour;
+	QueryColour queryColour;
+	Thread qc;
 	
 	@Override
 	public void onCreate(Bundle bundle)
@@ -67,6 +60,7 @@ public class CameraViewer extends Activity{
 		button1=(ToggleButton) findViewById(R.id.button1);
 		zoomControls = (ZoomControls) findViewById(R.id.zoomControls);
 		colourText = (TextView) findViewById(R.id.colourText);
+		queryColour = new QueryColour(this);
 	}
 	@Override
 	protected void onPause() {
@@ -107,7 +101,6 @@ public class CameraViewer extends Activity{
 			 camera=Camera.open();
 			 cparams = camera.getParameters();
 			 camera.setDisplayOrientation(90);
-			 sizes = cparams.getSupportedPreviewSizes();  
 			 camera.setParameters(cparams);
 			 maxZoom=cparams.getMaxZoom();
 			 zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
@@ -153,10 +146,16 @@ public class CameraViewer extends Activity{
 				    	
 				        int frameHeight = camera.getParameters().getPreviewSize().height;
 				        int frameWidth = camera.getParameters().getPreviewSize().width;
-				        // number of pixels//transforms NV21 pixel data into RGB pixels  
-				        int rgb[] = new int[frameWidth * frameHeight];
-				        // conversion
-				        //int[] myPixels = decodeYUV420SP(rgb, data, frameWidth, frameHeight);   
+				        queryColour.createRawSQL(data, frameWidth, frameHeight, circle.getx(), circle.gety());
+				        qc=new Thread(queryColour);
+				        qc.start();
+				        colourText.setText(queryColour.getText());
+				        try {
+							qc.join();
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 				    }
 				});
 		 }
@@ -203,9 +202,6 @@ public class CameraViewer extends Activity{
 			 {
 				 camera.stopPreview();
 			 }
-			 Camera.Parameters parameters=camera.getParameters();
-			 parameters.setPreviewSize(sizes.get(0).width, sizes.get(0).height);
-			 camera.setParameters(parameters);
 			 try 
 	         {
 	            camera.setPreviewDisplay(sh); // display using holder
@@ -218,26 +214,4 @@ public class CameraViewer extends Activity{
 	         isPreviewing = true;
 		 }
 	 };//ends sh declaration
-	 
-	 //async task to query the color name
-//	 private class QueryColour extends AsyncTask<String, String, String>{
-//			@Override
-//			Context c;
-//			public QueryColour(Context c)
-//			{
-//				this.c=c;
-//			}
-//			protected String doInBackground(String... params) {
-//				// TODO Auto-generated method stub
-//				String colourname;
-//				ExternalDbOpenHelper mydb = new ExternalDbOpenHelper(this.c, "rgbvaluesdb");
-//				return colourname;
-//			}
-//			protected void onProgressUpdate(String... progress) {
-//		    }
-//
-//		    protected void onPostExecute(String result) {
-//		    }
-//
-//		}
 }
