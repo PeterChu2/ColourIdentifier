@@ -2,7 +2,6 @@ package Chu.Peter.colouridentifier;
 
 import java.io.IOException;
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
@@ -139,7 +138,6 @@ public class CameraViewer extends Activity{
 			 camera.setPreviewCallback(new PreviewCallback() {
 				    @Override
 				    public void onPreviewFrame(byte[] data, Camera camera) {
-				    	Log.d("ORIENTATION", Integer.toString(display.getOrientation()));
 				    	Camera.Parameters cparams = camera.getParameters();
 				    	if(display.getRotation()==0)
 						{

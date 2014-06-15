@@ -1,5 +1,4 @@
 package Chu.Peter.colouridentifier;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -10,11 +9,8 @@ public class CameraTouchListener implements OnTouchListener{
 	}
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		String TAG = "COORDINATE";
 		circle.setx((int) event.getX());
 		circle.sety((int) event.getY());
-		String message = "x: " + event.getX() + " y: "+ event.getY();
-		Log.d(TAG, message);
 		return false;
 	}
 }
