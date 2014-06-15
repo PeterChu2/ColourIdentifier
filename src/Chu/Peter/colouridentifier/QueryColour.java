@@ -18,6 +18,11 @@ public class QueryColour implements Runnable{
 	private boolean isRunning;
 	private int sleepTime=3000;
 
+	public void setSleepTime(int sleepTime)
+	{
+		this.sleepTime=sleepTime;
+	}
+	
 	public QueryColour(Context c)
 	{
 		this.c=c;
@@ -51,7 +56,7 @@ public class QueryColour implements Runnable{
 				}
 			}
 			try {
-				Thread.sleep(3000);
+				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -117,5 +122,5 @@ public class QueryColour implements Runnable{
 				rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);  
 			}  
 		}  
-	}  
+	}
 }
