@@ -54,7 +54,7 @@ public class QueryColour implements Runnable{
 		{
 			return 250;
 		}
-		return (Math.round(num/10))*10;
+		return ((num + 5)/10)*10;
 	}
 	public String getText()
 	{
