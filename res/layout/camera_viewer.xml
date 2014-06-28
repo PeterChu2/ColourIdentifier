@@ -29,7 +29,7 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="50dp"
 		    android:layout_alignParentTop="true"
-		    android:background="#FFFF00">
+		    android:background="#30FFFF00">
 			    <TextView
 			        android:id="@+id/colourText"
 			        android:layout_width="0dp"

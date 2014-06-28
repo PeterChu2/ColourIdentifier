@@ -36,8 +36,11 @@ public class CameraViewer extends Activity{
 	private TextView colourText;
 	private Camera.Parameters cparams;
 	private Point startingPoint;
-	QueryColour queryColour;
-	Thread qc;
+	private int index=0;
+	private QueryColour queryColour;
+	private Thread qc;
+	private int frameWidth, frameHeight;
+	private Display display;
 	
 	@Override
 	public void onCreate(Bundle bundle)
@@ -65,15 +68,17 @@ public class CameraViewer extends Activity{
 	@Override
 	protected void onPause() {
 	    super.onPause();
+        // release the camera immediately on pause event   
+        //releaseCamera();
+        camera.stopPreview(); 
+        camera.setPreviewCallback(null);
+        surfaceHolder.removeCallback(surfaceCB);
+        camera.release();
+        camera = null;
+        queryColour.setIsRunning(false);
 	    try
 	    {    
-	        // release the camera immediately on pause event   
-	        //releaseCamera();
-	         camera.stopPreview(); 
-	         camera.setPreviewCallback(null);
-	         surfaceHolder.removeCallback(surfaceCB);
-	         camera.release();
-	         camera = null;
+	         qc.join();
 	    }
 	    catch(Exception e)
 	    {
@@ -129,10 +134,23 @@ public class CameraViewer extends Activity{
 						camera.setParameters(cparams);
 					}
 				});
+			 
 			 camera.setPreviewCallback(new PreviewCallback() {
 				    @Override
 				    public void onPreviewFrame(byte[] data, Camera camera) {
 				    	Camera.Parameters cparams = camera.getParameters();
+				    	if(display.getRotation()==0)
+						{
+							index=frameWidth*(frameHeight-circle.getx())+circle.gety();
+						}
+						else if(display.getRotation()==1)
+						{
+							index=frameWidth*(circle.gety())+circle.getx();
+						}
+						else 
+						{
+							index = frameWidth*(frameHeight-circle.gety())+(frameWidth-circle.getx());
+						}
 				    	if(button1.isChecked())
 				    	{
 				    		cparams.setFlashMode(Parameters.FLASH_MODE_TORCH);
@@ -141,38 +159,43 @@ public class CameraViewer extends Activity{
 				    	{
 				    		cparams.setFlashMode(Parameters.FLASH_MODE_OFF);
 				    	}
-				    	
 				    	camera.setParameters(cparams);
 				    	
-				        int frameHeight = camera.getParameters().getPreviewSize().height;
-				        int frameWidth = camera.getParameters().getPreviewSize().width;
-				        queryColour.createRawSQL(data, frameWidth, frameHeight, circle.getx(), circle.gety());
-				        qc=new Thread(queryColour);
-				        qc.start();
-				        colourText.setText(queryColour.getText());
-				        try {
-							qc.join();
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+				        frameHeight = camera.getParameters().getPreviewSize().height;
+				        frameWidth = camera.getParameters().getPreviewSize().width;
+				        queryColour.createRawSQL(data, frameWidth, frameHeight, index);
+
+					    colourText.setText(queryColour.getText());
+					    colourBox.invalidate();
 				    }
 				});
+			 qc=new Thread(queryColour);
+			 qc.start();
 		 }
 		 @Override
 		 //release resources when the surfaceview is destroyed
 		 public void surfaceDestroyed(SurfaceHolder sh)
 		 {
-			 camera.stopPreview();
-			 isPreviewing = false;
-			 camera.release();
+			 camera.stopPreview(); 
+		     camera.setPreviewCallback(null);
+		     surfaceHolder.removeCallback(surfaceCB);
+		     camera.release();
+		     camera = null;
+		     queryColour.setIsRunning(false);
+			 try {
+				qc.join();
+			 } catch (InterruptedException e) {
+				 // TODO Auto-generated catch block
+				 e.printStackTrace();
+			 }
 		 }
 		 @Override
 		 public void surfaceChanged(SurfaceHolder sh, int format, int width, int height)
 		 {
+			 
 			 //determine screen orientation and adjust the camera display accordingly
 			 WindowManager wm =  (WindowManager) getSystemService(WINDOW_SERVICE);
-			 Display display = wm.getDefaultDisplay();
+			 display = wm.getDefaultDisplay();
 		     display= wm.getDefaultDisplay();
 		     //place the cursor in the centre of the screen initially
 		     //api >=13 uses getSize, api <13 uses getWidth(), getHeight()
@@ -189,6 +212,7 @@ public class CameraViewer extends Activity{
 			 if(display.getRotation()==0)
 			 {
 				 camera.setDisplayOrientation(90);
+				 index=frameWidth*(frameHeight-circle.getx())+circle.gety();
 			 }
 			 else if(display.getRotation()==3)
 			 {

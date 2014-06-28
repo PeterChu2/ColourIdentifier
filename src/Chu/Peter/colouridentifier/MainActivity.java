@@ -1,9 +1,8 @@
 package Chu.Peter.colouridentifier;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 
 public class MainActivity extends Activity {
@@ -11,8 +10,17 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		Intent takePicture = new Intent(MainActivity.this, CameraViewer.class);
-		startActivityForResult(takePicture, 1); 
+		new Handler().postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                // Create an Intent that will start the main activity.
+            	MainActivity.this.finish();
+                Intent takePicture = new Intent(MainActivity.this, CameraViewer.class);
+        		startActivityForResult(takePicture, 1); 
+            }
+        }, 2000);
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
