@@ -9,7 +9,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 
-public class Circle extends View {
+public class CrossHairView extends View {
     private Paint p=new Paint();
     private int x_coord;
     private int y_coord;
@@ -24,9 +24,18 @@ public class Circle extends View {
         p.setStyle(Style.STROKE);
         p.setStrokeWidth((float) 5.0);
         p.setAlpha(200);
-        canvas.drawCircle(x_coord, y_coord, 20, p);
+        
+        float startX = x_coord - 40;
+    	float startY = y_coord - 40; 
+    	float stopX = x_coord + 40;
+    	float stopY = y_coord + 40;
+    	
+        canvas.drawLine(startX, y_coord, stopX, y_coord, p);
+        canvas.drawLine(x_coord, startY, x_coord, stopY, p);
+        
+//        canvas.drawCircle(x_coord, y_coord, 20, p);
     }
-    public Circle(Context context) {
+    public CrossHairView(Context context) {
         super(context);
     }
     public void setx(int x){

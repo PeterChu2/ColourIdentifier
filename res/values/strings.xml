@@ -6,5 +6,10 @@
     <string name="hello_world">Hello world!</string>
     <string name="flash_off">Flash: Off</string>
     <string name="flash_on">Flash: On</string>
+    <string name="refresh_rate">Refresh Rate</string>
+    <string name="fivesecs">5 Seconds</string>
+    <string name="onesec">1 Second</string>
+    <string name="manual">Manual Refresh</string>
+    <string name="threesecs">3 Seconds</string>
 
 </resources>
