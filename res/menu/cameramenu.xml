@@ -9,6 +9,8 @@
         <menu>
             <item android:id="@+id/onesec"
                   android:title="@string/onesec" />
+            <item android:id="@+id/twosecs"
+                  android:title="@string/twosecs" />
             <item android:id="@+id/threesecs"
                   android:title="@string/threesecs" />
             <item android:id="@+id/fivesecs"

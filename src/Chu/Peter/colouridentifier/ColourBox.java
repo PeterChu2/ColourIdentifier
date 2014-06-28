@@ -12,7 +12,7 @@ public class ColourBox extends View{
 
     public ColourBox(Context context) {
 		super(context);
-		p.setColor(Color.YELLOW);
+		p.setARGB(30, 255, 255, 0);
 	    borderp.setColor(Color.BLACK);
 	}
 	@Override
@@ -24,11 +24,11 @@ public class ColourBox extends View{
 	}
 	public ColourBox(Context context, AttributeSet attrs) {
 	    super(context, attrs);
-	    p.setColor(Color.YELLOW);
+	    p.setARGB(30, 255, 255, 0);
 	}
 	public ColourBox(Context context, AttributeSet attrs, int defStyle) {
 	    super(context, attrs, defStyle);
-	    p.setColor(Color.YELLOW);
+	    p.setARGB(30, 255, 255, 0);
 	}
 	public static void setColour(int colour)
 	{
