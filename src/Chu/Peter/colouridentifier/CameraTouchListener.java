@@ -3,8 +3,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 public class CameraTouchListener implements OnTouchListener{
-	private Circle circle;
-	public CameraTouchListener(Circle circle) {
+	private CrossHairView circle;
+	public CameraTouchListener(CrossHairView circle) {
 		this.circle=circle;
 	}
 	@Override

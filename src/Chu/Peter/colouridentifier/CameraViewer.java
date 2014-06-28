@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -27,7 +28,7 @@ public class CameraViewer extends Activity{
 	private boolean isPreviewing; // true if camera preview is on
 	private Camera camera; // captures image data
 	private CameraTouchListener touchListener;
-	private Circle circle;
+	private CrossHairView crossHairs;
 	private ToggleButton button1;
 	private ZoomControls zoomControls;
 	private int zoom=5;
@@ -46,13 +47,16 @@ public class CameraViewer extends Activity{
 	public void onCreate(Bundle bundle)
 	{
 		super.onCreate(bundle);
+		//Make the app full-screen
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.camera_viewer);
-		circle=new Circle(this);
+		crossHairs=new CrossHairView(this);
 		colourBox=(ColourBox)findViewById(R.id.colourBox);
 		FrameLayout fl = (FrameLayout)findViewById(R.id.frameLayout);
-		fl.addView((View) circle);
+		fl.addView((View) crossHairs);
 		//initialize surfaceview + set its holder
-		touchListener=new CameraTouchListener(circle);
+		touchListener=new CameraTouchListener(crossHairs);
 		surfaceView=(SurfaceView) findViewById(R.id.cameraSurfaceView);
 		surfaceView.setOnTouchListener(touchListener);
 		//get the holder from the surfaceview and add callback
@@ -88,13 +92,29 @@ public class CameraViewer extends Activity{
 	 @Override
 	 public boolean onCreateOptionsMenu(Menu menu) 
 	 {
-	    super.onCreateOptionsMenu(menu);
-	    return true;
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.cameramenu, menu);
+		return true;
 	 } // end method onCreateOptionsMenu
 	 @Override
 	 public boolean onOptionsItemSelected(MenuItem item) 
 	 {
-		return true;
+		 switch (item.getItemId())
+	        {
+	        	case R.id.onesec:
+	        		queryColour.setSleepTime(1000);
+	        		return true;
+			 	case R.id.threesecs:
+			 		queryColour.setSleepTime(3000);
+		        	return true;
+		        case R.id.fivesecs:
+		        	queryColour.setSleepTime(5000);
+		        	return true;
+		        case R.id.manual:
+		        	return true;
+		        default:
+		            return super.onOptionsItemSelected(item);
+	        }
 	 } // end method onOptionsItemSelected
 	 private SurfaceHolder.Callback surfaceCB =
 		new SurfaceHolder.Callback()
@@ -141,16 +161,20 @@ public class CameraViewer extends Activity{
 				    	Camera.Parameters cparams = camera.getParameters();
 				    	if(display.getRotation()==0)
 						{
-							index=frameWidth*(frameHeight-circle.getx())+circle.gety();
+							index=frameWidth*(frameHeight-crossHairs.getx())+crossHairs.gety();
 						}
 						else if(display.getRotation()==1)
 						{
-							index=frameWidth*(circle.gety())+circle.getx();
+							index=frameWidth*(crossHairs.gety())+crossHairs.getx();
 						}
 						else 
 						{
-							index = frameWidth*(frameHeight-circle.gety())+(frameWidth-circle.getx());
+							index = frameWidth*(frameHeight-crossHairs.gety())+(frameWidth-crossHairs.getx());
 						}
+				    	if (index <= 0)
+				    	{
+				    		index = 1;
+				    	}
 				    	if(button1.isChecked())
 				    	{
 				    		cparams.setFlashMode(Parameters.FLASH_MODE_TORCH);
@@ -202,17 +226,17 @@ public class CameraViewer extends Activity{
 		     if (android.os.Build.VERSION.SDK_INT >= 13){
 		        startingPoint=new Point();
 		        display.getSize(startingPoint);
-		        circle.setx(startingPoint.x/2);
-		        circle.sety(startingPoint.y/2);
+		        crossHairs.setx(startingPoint.x/2);
+		        crossHairs.sety(startingPoint.y/2);
 		     }
 		     else{
-		        circle.setx(display.getWidth()/2);
-		        circle.sety(display.getHeight()/2);
+		        crossHairs.setx(display.getWidth()/2);
+		        crossHairs.sety(display.getHeight()/2);
 		     }
 			 if(display.getRotation()==0)
 			 {
 				 camera.setDisplayOrientation(90);
-				 index=frameWidth*(frameHeight-circle.getx())+circle.gety();
+				 index=frameWidth*(frameHeight-crossHairs.getx())+crossHairs.gety();
 			 }
 			 else if(display.getRotation()==3)
 			 {
