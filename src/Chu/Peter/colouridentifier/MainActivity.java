@@ -17,8 +17,8 @@ public class MainActivity extends Activity {
             {
                 // Create an Intent that will start the main activity.
             	MainActivity.this.finish();
-                Intent takePicture = new Intent(MainActivity.this, CameraViewer.class);
-        		startActivityForResult(takePicture, 1); 
+                Intent cameraViewer = new Intent(MainActivity.this, CameraViewer.class);
+        		startActivityForResult(cameraViewer, 1); 
             }
         }, 2000);
 	}

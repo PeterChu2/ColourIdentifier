@@ -16,26 +16,21 @@ public class QueryColour implements Runnable{
 	private int rgb[];
 	private boolean first=true;
 	private boolean isRunning;
-	private int sleepTime=3000;
+	private int sleepTime=2000;
+	private ColourBox colourBox;
 
 	public void setSleepTime(int sleepTime)
 	{
 		this.sleepTime=sleepTime;
 	}
 	
-	public QueryColour(Context c)
+	public QueryColour(Context c, ColourBox colourBox)
 	{
+		this.colourBox=colourBox;
 		this.c=c;
 		isRunning=true;
 	}
-	public void setRawSQL(int r, int g, int b)
-	{
-		//round values to the nearest 10, as the database only supports these values
-		r = round10(r);
-		g = round10(g);
-		b = round10(b);
-		this.rawsql=String.format("SELECT text FROM RGBValues WHERE red=%d and green=%d and blue=%d", r, g, b);
-	}
+
 	@Override
 	public void run() {
 		dbHelper=new ExternalDbOpenHelper(c,"RGBValues");
@@ -48,6 +43,7 @@ public class QueryColour implements Runnable{
 					try
 					{
 						colourText = cursor.getString(0);
+						colourBox.postInvalidate();
 					}
 					catch(Exception e)
 					{
@@ -63,6 +59,16 @@ public class QueryColour implements Runnable{
 			}
 		}
 	}
+	
+	public void setRawSQL(int r, int g, int b)
+	{
+		//round values to the nearest 10, as the database only supports these values
+		r = round10(r);
+		g = round10(g);
+		b = round10(b);
+		this.rawsql=String.format("SELECT text FROM RGBValues WHERE red=%d and green=%d and blue=%d", r, g, b);
+	}
+	
 	//rounding function to the nearest 10
 	private static int round10(int num)
 	{
@@ -91,7 +97,6 @@ public class QueryColour implements Runnable{
 		this.isRunning=isRunning;
 	}
 
-
 	//Method from Ketai project! Not mine! See below...  
 	private void decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {  
 
@@ -105,8 +110,7 @@ public class QueryColour implements Runnable{
 				if ((i & 1) == 0) {  
 					v = (0xff & yuv420sp[uvp++]) - 128;  
 					u = (0xff & yuv420sp[uvp++]) - 128;  
-				}  
-	
+				}
 				int y1192 = 1192 * y;  
 				int r = (y1192 + 1634 * v);  
 				int g = (y1192 - 833 * v - 400 * u);  
@@ -117,8 +121,7 @@ public class QueryColour implements Runnable{
 				if (g < 0)                  g = 0;               else if (g > 262143)  
 					g = 262143;  
 				if (b < 0)                  b = 0;               else if (b > 262143)  
-					b = 262143;  
-	
+					b = 262143;
 				rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);  
 			}  
 		}  

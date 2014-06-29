@@ -67,14 +67,20 @@ public class CameraViewer extends Activity{
 		button1=(ToggleButton) findViewById(R.id.button1);
 		zoomControls = (ZoomControls) findViewById(R.id.zoomControls);
 		colourText = (TextView) findViewById(R.id.colourText);
-		queryColour = new QueryColour(this);
+		queryColour = new QueryColour(this,colourBox);
 	}
 	@Override
 	protected void onPause() {
 	    super.onPause();
         // release the camera immediately on pause event   
         //releaseCamera();
-        camera.stopPreview(); 
+	    try{
+	    	camera.stopPreview(); 
+	    }
+        catch(NullPointerException e)
+        {
+        	Log.d("ONPAUSE", "Cannot stop null instance of Preview");
+        }
         camera.setPreviewCallback(null);
         surfaceHolder.removeCallback(surfaceCB);
         camera.release();
@@ -104,7 +110,10 @@ public class CameraViewer extends Activity{
 	        	case R.id.onesec:
 	        		queryColour.setSleepTime(1000);
 	        		return true;
-			 	case R.id.threesecs:
+	        	case R.id.twosecs:
+			 		queryColour.setSleepTime(2000);
+		        	return true;
+		        case R.id.threesecs:
 			 		queryColour.setSleepTime(3000);
 		        	return true;
 		        case R.id.fivesecs:
@@ -125,6 +134,8 @@ public class CameraViewer extends Activity{
 		 {
 			 camera=Camera.open();
 			 cparams = camera.getParameters();
+			 frameHeight = cparams.getPreviewSize().height;
+		     frameWidth = cparams.getPreviewSize().width;
 			 camera.setDisplayOrientation(90);
 			 camera.setParameters(cparams);
 			 maxZoom=cparams.getMaxZoom();
@@ -158,7 +169,7 @@ public class CameraViewer extends Activity{
 			 camera.setPreviewCallback(new PreviewCallback() {
 				    @Override
 				    public void onPreviewFrame(byte[] data, Camera camera) {
-				    	Camera.Parameters cparams = camera.getParameters();
+//				    	cparams = camera.getParameters();
 				    	if(display.getRotation()==0)
 						{
 							index=frameWidth*(frameHeight-crossHairs.getx())+crossHairs.gety();
@@ -185,12 +196,10 @@ public class CameraViewer extends Activity{
 				    	}
 				    	camera.setParameters(cparams);
 				    	
-				        frameHeight = camera.getParameters().getPreviewSize().height;
-				        frameWidth = camera.getParameters().getPreviewSize().width;
+				        
 				        queryColour.createRawSQL(data, frameWidth, frameHeight, index);
 
 					    colourText.setText(queryColour.getText());
-					    colourBox.invalidate();
 				    }
 				});
 			 qc=new Thread(queryColour);
@@ -216,7 +225,6 @@ public class CameraViewer extends Activity{
 		 @Override
 		 public void surfaceChanged(SurfaceHolder sh, int format, int width, int height)
 		 {
-			 
 			 //determine screen orientation and adjust the camera display accordingly
 			 WindowManager wm =  (WindowManager) getSystemService(WINDOW_SERVICE);
 			 display = wm.getDefaultDisplay();
