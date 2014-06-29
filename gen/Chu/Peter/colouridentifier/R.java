@@ -22,22 +22,24 @@ public final class R {
     }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
-        public static final int title=0x7f020001;
+        public static final int stat_notify_sync=0x7f020001;
+        public static final int title=0x7f020002;
     }
     public static final class id {
-        public static final int action_settings=0x7f08000d;
+        public static final int action_settings=0x7f08000e;
         public static final int button1=0x7f080004;
         public static final int cameraSurfaceView=0x7f080002;
-        public static final int colourBox=0x7f080006;
-        public static final int colourText=0x7f080005;
+        public static final int colourBox=0x7f080007;
+        public static final int colourText=0x7f080006;
         public static final int container=0x7f080000;
-        public static final int fivesecs=0x7f08000b;
+        public static final int fivesecs=0x7f08000c;
         public static final int frameLayout=0x7f080001;
-        public static final int manual=0x7f08000c;
-        public static final int onesec=0x7f080008;
-        public static final int refresh_menu=0x7f080007;
-        public static final int threesecs=0x7f08000a;
-        public static final int twosecs=0x7f080009;
+        public static final int manual=0x7f08000d;
+        public static final int onesec=0x7f080009;
+        public static final int refreshButton=0x7f080005;
+        public static final int refresh_menu=0x7f080008;
+        public static final int threesecs=0x7f08000b;
+        public static final int twosecs=0x7f08000a;
         public static final int zoomControls=0x7f080003;
     }
     public static final class layout {
@@ -57,6 +59,7 @@ public final class R {
         public static final int hello_world=0x7f050002;
         public static final int manual=0x7f050008;
         public static final int onesec=0x7f050007;
+        public static final int refresh=0x7f05000b;
         public static final int refresh_rate=0x7f050005;
         public static final int threesecs=0x7f050009;
         public static final int twosecs=0x7f05000a;

@@ -9,8 +9,9 @@
     <string name="refresh_rate">Refresh Rate</string>
     <string name="fivesecs">5 Seconds</string>
     <string name="onesec">1 Second</string>
-    <string name="manual">Manual Refresh</string>
+    <string name="manual">Manual Refresh Only</string>
     <string name="threesecs">3 Seconds</string>
     <string name="twosecs">2 Seconds</string>
+    <string name="refresh">Refresh Button</string>
 
 </resources>
