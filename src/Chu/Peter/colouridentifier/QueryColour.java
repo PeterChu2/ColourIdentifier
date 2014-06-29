@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
-import android.util.Log;
 
 public class QueryColour implements Runnable{
 	private Context c;
@@ -18,6 +17,7 @@ public class QueryColour implements Runnable{
 	private boolean isRunning;
 	private int sleepTime=2000;
 	private ColourBox colourBox;
+	private int colour;
 
 	public void setSleepTime(int sleepTime)
 	{
@@ -37,20 +37,7 @@ public class QueryColour implements Runnable{
 		db=dbHelper.getDb();
 		while(isRunning==true)
 		{
-			if(rawsql != null){
-				cursor=db.rawQuery(rawsql, null);
-				if (cursor.moveToFirst()) {
-					try
-					{
-						colourText = cursor.getString(0);
-						colourBox.postInvalidate();
-					}
-					catch(Exception e)
-					{
-						Log.d("ERROR", "Error in returning text from cursor");
-					}
-				}
-			}
+			refreshStatus();
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
@@ -89,12 +76,35 @@ public class QueryColour implements Runnable{
 		{rgb = new int[width*height];first = false;}
 		decodeYUV420SP(rgb, data, width, height);
 		this.setRawSQL((int)(Color.red(rgb[index])),(int)(Color.green(rgb[index])),(int)(Color.blue(rgb[index])));
-		ColourBox.setColour(rgb[index]);
+		this.colour = rgb[index];
 	}
 	
 	public void setIsRunning(boolean isRunning)
 	{
 		this.isRunning=isRunning;
+	}
+	public boolean getIsRunning()
+	{
+		return isRunning;
+	}
+	
+	public void refreshStatus()
+	{
+		if(rawsql != null){
+			cursor=db.rawQuery(rawsql, null);
+			if (cursor.moveToFirst()) {
+				try
+				{
+					ColourBox.setColour(colour);
+					colourText = cursor.getString(0);
+					colourBox.postInvalidate();
+				}
+				catch(Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	//Method from Ketai project! Not mine! See below...  
