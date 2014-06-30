@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
                 Intent cameraViewer = new Intent(MainActivity.this, CameraViewer.class);
         		startActivityForResult(cameraViewer, 1); 
             }
-        }, 2000);
+        }, 1500);
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
