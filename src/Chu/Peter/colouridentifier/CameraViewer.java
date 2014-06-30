@@ -42,10 +42,12 @@ public class CameraViewer extends Activity{
 	private Thread qc;
 	private int frameWidth, frameHeight;
 	private Display display;
+	private boolean manualMode;
 
 	@Override
 	public void onCreate(Bundle bundle)
 	{
+		manualMode = false;
 		super.onCreate(bundle);
 		//Make the app full-screen
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -97,6 +99,61 @@ public class CameraViewer extends Activity{
 		}
 	}
 	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		camera=Camera.open();
+
+		camera.setPreviewCallback(new PreviewCallback() {
+			@Override
+			public void onPreviewFrame(byte[] data, Camera camera) {
+				if(display.getRotation()==0)
+				{
+					index=frameWidth*(frameHeight-crossHairs.getx())+crossHairs.gety();
+				}
+				else if(display.getRotation()==1)
+				{
+					index=frameWidth*(crossHairs.gety())+crossHairs.getx();
+				}
+				else 
+				{
+					index = frameWidth*(frameHeight-crossHairs.gety())+(frameWidth-crossHairs.getx());
+				}
+				if ((index <= 0)||(index>frameHeight*frameWidth))
+				{
+					index=1;
+				}
+				if(button1.isChecked())
+				{
+					cparams.setFlashMode(Parameters.FLASH_MODE_TORCH);
+				}
+				else
+				{
+					cparams.setFlashMode(Parameters.FLASH_MODE_OFF);
+				}
+				camera.setParameters(cparams);
+
+				try{
+					queryColour.createRawSQL(data, frameWidth, frameHeight, index);
+				}
+				catch(IndexOutOfBoundsException e){
+				}
+				colourText.setText(queryColour.getText());
+
+			}
+		});
+		super.onResume();
+		surfaceHolder.addCallback(surfaceCB);
+		queryColour.setIsRunning(true);
+		camera.startPreview();
+		if(manualMode == false)
+		{
+			qc=new Thread(queryColour);
+			qc.start();
+		}
+		isPreviewing = true;
+	}
+
+	@Override
 	protected void onDestroy() {
 		super.onPause();
 		// release the camera
@@ -137,6 +194,7 @@ public class CameraViewer extends Activity{
 		case R.id.onesec:
 			if(queryColour.getIsRunning() == false)
 			{
+				manualMode=false;
 				queryColour.setIsRunning(true);
 				qc=new Thread(queryColour);
 				qc.start();
@@ -146,6 +204,7 @@ public class CameraViewer extends Activity{
 		case R.id.twosecs:
 			if(queryColour.getIsRunning() == false)
 			{
+				manualMode=false;
 				queryColour.setIsRunning(true);
 				qc=new Thread(queryColour);
 				qc.start();
@@ -155,6 +214,7 @@ public class CameraViewer extends Activity{
 		case R.id.threesecs:
 			if(queryColour.getIsRunning() == false)
 			{
+				manualMode = false;
 				queryColour.setIsRunning(true);
 				qc=new Thread(queryColour);
 				qc.start();
@@ -164,6 +224,7 @@ public class CameraViewer extends Activity{
 		case R.id.fivesecs:
 			if(queryColour.getIsRunning() == false)
 			{
+				manualMode = false;
 				queryColour.setIsRunning(true);
 				qc=new Thread(queryColour);
 				qc.start();
@@ -172,19 +233,19 @@ public class CameraViewer extends Activity{
 			return true;
 		case R.id.manual:
 			queryColour.setIsRunning(false);
+			manualMode = true;
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	} // end method onOptionsItemSelected
 	private SurfaceHolder.Callback surfaceCB =
-	new SurfaceHolder.Callback()
+			new SurfaceHolder.Callback()
 	{
 		@Override
 		//initialize camera on surfaceview creation
 		public void surfaceCreated(SurfaceHolder sh)
 		{
-			camera=Camera.open();
 			cparams = camera.getParameters();
 			frameHeight = cparams.getPreviewSize().height;
 			frameWidth = cparams.getPreviewSize().width;
@@ -223,52 +284,16 @@ public class CameraViewer extends Activity{
 					queryColour.refreshStatus();
 				}
 			});
-			camera.setPreviewCallback(new PreviewCallback() {
-				@Override
-				public void onPreviewFrame(byte[] data, Camera camera) {
-					if(display.getRotation()==0)
-					{
-						index=frameWidth*(frameHeight-crossHairs.getx())+crossHairs.gety();
-					}
-					else if(display.getRotation()==1)
-					{
-						index=frameWidth*(crossHairs.gety())+crossHairs.getx();
-					}
-					else 
-					{
-						index = frameWidth*(frameHeight-crossHairs.gety())+(frameWidth-crossHairs.getx());
-					}
-					if ((index <= 0)||(index>frameHeight*frameWidth))
-					{
-						index=1;
-					}
-					if(button1.isChecked())
-					{
-						cparams.setFlashMode(Parameters.FLASH_MODE_TORCH);
-					}
-					else
-					{
-						cparams.setFlashMode(Parameters.FLASH_MODE_OFF);
-					}
-					camera.setParameters(cparams);
-
-					try{
-						queryColour.createRawSQL(data, frameWidth, frameHeight, index);
-					}
-					catch(IndexOutOfBoundsException e){
-					}
-
-					colourText.setText(queryColour.getText());
-				}
-			});
-			qc=new Thread(queryColour);
-			qc.start();
 		}
 		@Override
 		//release resources when the surfaceview is destroyed
 		public void surfaceDestroyed(SurfaceHolder sh)
 		{
-			camera.stopPreview(); 
+			if(isPreviewing)
+			{
+				camera.stopPreview();
+				isPreviewing = false;
+			}
 			camera.setPreviewCallback(null);
 			surfaceHolder.removeCallback(surfaceCB);
 			camera.release();
@@ -313,10 +338,6 @@ public class CameraViewer extends Activity{
 			{
 				camera.setDisplayOrientation(0);
 			}
-			if(isPreviewing)
-			{
-				camera.stopPreview();
-			}
 			try 
 			{
 				camera.setPreviewDisplay(sh); // display using holder
@@ -325,7 +346,6 @@ public class CameraViewer extends Activity{
 			{
 				e.printStackTrace();
 			} // end catch
-			camera.startPreview(); // begin the preview
 			isPreviewing = true;
 		}
 	};//ends sh declaration
