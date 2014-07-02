@@ -6,11 +6,11 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class ColourBox extends View{
+public class ColourBoxView extends View{
 	private static Paint p=new Paint();
 	private Paint borderp=new Paint();
 
-    public ColourBox(Context context) {
+    public ColourBoxView(Context context) {
 		super(context);
 		p.setARGB(30, 255, 255, 0);
 	    borderp.setColor(Color.BLACK);
@@ -22,11 +22,11 @@ public class ColourBox extends View{
 	    canvas.drawCircle(getWidth()/2, getHeight()/2, 27, p);
 	    canvas.drawCircle(getWidth()/2, getHeight()/2, 27, borderp);
 	}
-	public ColourBox(Context context, AttributeSet attrs) {
+	public ColourBoxView(Context context, AttributeSet attrs) {
 	    super(context, attrs);
 	    p.setARGB(30, 255, 255, 0);
 	}
-	public ColourBox(Context context, AttributeSet attrs, int defStyle) {
+	public ColourBoxView(Context context, AttributeSet attrs, int defStyle) {
 	    super(context, attrs, defStyle);
 	    p.setARGB(30, 255, 255, 0);
 	}

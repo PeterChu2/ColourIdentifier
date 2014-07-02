@@ -1,4 +1,5 @@
 package Chu.Peter.colouridentifier;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,7 +18,7 @@ public class MainActivity extends Activity {
             {
                 // Create an Intent that will start the main activity.
             	MainActivity.this.finish();
-                Intent cameraViewer = new Intent(MainActivity.this, CameraViewer.class);
+                Intent cameraViewer = new Intent(MainActivity.this, CameraActivity.class);
         		startActivityForResult(cameraViewer, 1); 
             }
         }, 1500);
