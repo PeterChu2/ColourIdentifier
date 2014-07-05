@@ -2,14 +2,20 @@ package Chu.Peter.colouridentifier;
 
 import java.io.IOException;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PreviewCallback;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
+import android.util.Log;
 import android.view.Display;
+import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -18,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.ZoomControls;
 
@@ -31,6 +38,7 @@ public class CameraViewer extends Activity{
 	private ToggleButton button1;
 	private ZoomControls zoomControls;
 	private ImageView refreshButton;
+	private ImageView logButton;
 	private int zoom=5;
 	private int maxZoom;
 	private ColourBox colourBox;
@@ -43,12 +51,22 @@ public class CameraViewer extends Activity{
 	private int frameWidth, frameHeight;
 	private Display display;
 	private boolean manualMode;
+	private GestureDetectorCompat mDetector; 
+	DatabaseConnector dc;
+
+
+
+	@Override 
+	public boolean onTouchEvent(MotionEvent event){ 
+		this.mDetector.onTouchEvent(event);
+		return super.onTouchEvent(event);
+	}
 
 	@Override
-	public void onCreate(Bundle bundle)
+	public void onCreate(Bundle savedInstanceState)
 	{
 		manualMode = false;
-		super.onCreate(bundle);
+		super.onCreate(savedInstanceState);
 		//Make the app full-screen
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -69,8 +87,13 @@ public class CameraViewer extends Activity{
 		button1=(ToggleButton) findViewById(R.id.button1);
 		zoomControls = (ZoomControls) findViewById(R.id.zoomControls);
 		refreshButton = (ImageView) findViewById(R.id.refreshButton);
+		logButton = (ImageView) findViewById(R.id.logButton);
 		colourText = (TextView) findViewById(R.id.colourText);
-		queryColour = new QueryColour(this,colourBox);
+		queryColour = new QueryColour(this);
+		super.onCreate(savedInstanceState);
+		mDetector = new GestureDetectorCompat(this, new MyGestureListener());
+		dc = new DatabaseConnector(CameraViewer.this);
+
 	}
 	@Override
 	protected void onPause() {
@@ -137,7 +160,6 @@ public class CameraViewer extends Activity{
 				}
 				catch(IndexOutOfBoundsException e){
 				}
-				colourText.setText(queryColour.getText());
 
 			}
 		});
@@ -155,13 +177,14 @@ public class CameraViewer extends Activity{
 
 	@Override
 	protected void onDestroy() {
-		super.onPause();
+		super.onDestroy();
 		// release the camera
 		try{
 			camera.stopPreview();
 			camera.setPreviewCallback(null);
 			camera.release();
 			camera = null;
+			dc.close();
 		}
 		catch(NullPointerException e)
 		{
@@ -284,6 +307,19 @@ public class CameraViewer extends Activity{
 					queryColour.refreshStatus();
 				}
 			});
+			logButton.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					// TODO Auto-generated method stub
+					dc.open();
+					dc.insertRecord((String) colourText.getText(), String.format("#%06X", (0xFFFFFF & colourBox.getP().getColor())), colourBox.getP().getColor());
+					dc.close();
+					Toast t = Toast.makeText(CameraViewer.this, "Colour logged! Swipe left to view log!", Toast.LENGTH_SHORT);
+					t.setGravity(Gravity.CENTER, 0, 0);
+					t.show();
+				}
+			});
 		}
 		@Override
 		//release resources when the surfaceview is destroyed
@@ -306,6 +342,7 @@ public class CameraViewer extends Activity{
 				e.printStackTrace();
 			}
 		}
+		@SuppressWarnings("deprecation")
 		@Override
 		public void surfaceChanged(SurfaceHolder sh, int format, int width, int height)
 		{
@@ -349,4 +386,44 @@ public class CameraViewer extends Activity{
 			isPreviewing = true;
 		}
 	};//ends sh declaration
+
+	class MyGestureListener extends GestureDetector.SimpleOnGestureListener{
+		private static final String DEBUG_TAG = "Gestures"; 
+		private int swipe_Min_Distance = 40;
+		private int swipe_Max_Distance = 350;
+		private int swipe_Min_Velocity = 30;
+		@Override
+		public boolean onDown(MotionEvent event) {
+			return true;
+		}
+
+		@Override
+		public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) 
+		{
+			final float xDistance = Math.abs(event1.getX() - event2.getX());
+			final float yDistance = Math.abs(event1.getY() - event2.getY());
+			velocityX = Math.abs(velocityX);
+			velocityY = Math.abs(velocityY);
+
+			if(xDistance > this.swipe_Max_Distance || yDistance > this.swipe_Max_Distance)
+			{return false;}
+
+			if(velocityX > this.swipe_Min_Velocity && xDistance > this.swipe_Min_Distance){
+				if(event1.getX() > event2.getX())
+				{// right to left
+					Log.d(DEBUG_TAG, "onFling: swipe to left" );
+					Intent colourLog = new Intent(CameraViewer.this, ColourLog.class);
+					startActivityForResult(colourLog, 0); 
+					overridePendingTransition  (R.anim.right_slide_in, R.anim.right_slide_out);
+
+				}
+				else
+				{//swipe left to right
+					Log.d(DEBUG_TAG, "onFling: swipe to right" );
+				}
+			}
+			return true;
+		} 
+	}
 }
+

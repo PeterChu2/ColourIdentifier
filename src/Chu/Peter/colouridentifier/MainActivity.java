@@ -11,16 +11,16 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		new Handler().postDelayed(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                // Create an Intent that will start the main activity.
-            	MainActivity.this.finish();
-                Intent cameraViewer = new Intent(MainActivity.this, CameraViewer.class);
-        		startActivityForResult(cameraViewer, 1); 
-            }
-        }, 1500);
+		{
+			@Override
+			public void run()
+			{
+				// Create an Intent that will start the main activity.
+				MainActivity.this.finish();
+				Intent cameraViewer = new Intent(MainActivity.this, CameraViewer.class);
+				startActivityForResult(cameraViewer, 1); 
+			}
+		}, 1500);
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

@@ -30,5 +30,10 @@
          	android:theme="@android:style/Theme.Light"
          	android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>
+        <activity android:name=".ColourLog" 
+         	android:label="@string/app_name"
+         	android:theme="@android:style/Theme.Light"
+         	android:configChanges="keyboardHidden|orientation|screenSize">
+        </activity>
     </application>
 </manifest>

@@ -1,17 +1,19 @@
 package Chu.Peter.colouridentifier;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.widget.TextView;
 
 public class QueryColour implements Runnable{
-	private Context c;
+	private Activity c;
 	private SQLiteDatabase db;
 	private ExternalDbOpenHelper dbHelper;
 	private Cursor cursor;
 	private String rawsql;
-	private String colourText="";
+	private TextView colourText;
 	private int rgb[];
 	private boolean first=true;
 	private boolean isRunning;
@@ -23,17 +25,18 @@ public class QueryColour implements Runnable{
 	{
 		this.sleepTime=sleepTime;
 	}
-	
-	public QueryColour(Context c, ColourBox colourBox)
+
+	public QueryColour(Activity c)
 	{
-		this.colourBox=colourBox;
-		this.c=c;
+		this.colourBox=(ColourBox) c.findViewById(R.id.colourBox);
 		isRunning=true;
+		this.colourText = (TextView) c.findViewById(R.id.colourText);
+		this.c = c;
 	}
 
 	@Override
 	public void run() {
-		dbHelper=new ExternalDbOpenHelper(c,"RGBValues");
+		dbHelper=new ExternalDbOpenHelper((Context) c,"RGBValues");
 		db=dbHelper.getDb();
 		while(isRunning==true)
 		{
@@ -46,7 +49,7 @@ public class QueryColour implements Runnable{
 			}
 		}
 	}
-	
+
 	public void setRawSQL(int r, int g, int b)
 	{
 		//round values to the nearest 10, as the database only supports these values
@@ -55,7 +58,7 @@ public class QueryColour implements Runnable{
 		b = round10(b);
 		this.rawsql=String.format("SELECT text FROM RGBValues WHERE red=%d and green=%d and blue=%d", r, g, b);
 	}
-	
+
 	//rounding function to the nearest 10
 	private static int round10(int num)
 	{
@@ -66,10 +69,6 @@ public class QueryColour implements Runnable{
 		}
 		return ((num + 5)/10)*10;
 	}
-	public String getText()
-	{
-		return colourText;
-	}
 	public void createRawSQL(byte[] data, int width, int height, int index)
 	{
 		if (first==true)
@@ -78,7 +77,7 @@ public class QueryColour implements Runnable{
 		this.setRawSQL((int)(Color.red(rgb[index])),(int)(Color.green(rgb[index])),(int)(Color.blue(rgb[index])));
 		this.colour = rgb[index];
 	}
-	
+
 	public void setIsRunning(boolean isRunning)
 	{
 		this.isRunning=isRunning;
@@ -87,7 +86,7 @@ public class QueryColour implements Runnable{
 	{
 		return isRunning;
 	}
-	
+
 	public synchronized void refreshStatus()
 	{
 		if(rawsql != null){
@@ -95,10 +94,13 @@ public class QueryColour implements Runnable{
 			if (cursor.moveToFirst()) {
 				try
 				{
-					ColourBox.setColour(colour);
-					colourText = cursor.getString(0);
+					colourBox.setColour(colour);
 					colourBox.postInvalidate();
-				}
+					c.runOnUiThread(new Runnable(){public void run(){
+								colourText.setText(cursor.getString(0));
+							};
+						});
+					}
 				catch(Exception e)
 				{
 					e.printStackTrace();
@@ -112,27 +114,27 @@ public class QueryColour implements Runnable{
 		final int frameSize = width * height;  
 
 		for (int j = 0, yp = 0; j < height; j++) {       int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
-			for (int i = 0; i < width; i++, yp++) {
-				int y = (0xff & ((int) yuv420sp[yp])) - 16;
-				if (y < 0)
-					y = 0;
-				if ((i & 1) == 0) {
-					v = (0xff & yuv420sp[uvp++]) - 128;
-					u = (0xff & yuv420sp[uvp++]) - 128;
-				}
-				int y1192 = 1192 * y;
-				int r = (y1192 + 1634 * v);
-				int g = (y1192 - 833 * v - 400 * u);
-				int b = (y1192 + 2066 * u);
-				
-				if (r < 0)                  r = 0;               else if (r > 262143)
-					r = 262143;
-				if (g < 0)                  g = 0;               else if (g > 262143)
-					g = 262143;
-				if (b < 0)                  b = 0;               else if (b > 262143)
-					b = 262143;
-				rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
+		for (int i = 0; i < width; i++, yp++) {
+			int y = (0xff & ((int) yuv420sp[yp])) - 16;
+			if (y < 0)
+				y = 0;
+			if ((i & 1) == 0) {
+				v = (0xff & yuv420sp[uvp++]) - 128;
+				u = (0xff & yuv420sp[uvp++]) - 128;
 			}
+			int y1192 = 1192 * y;
+			int r = (y1192 + 1634 * v);
+			int g = (y1192 - 833 * v - 400 * u);
+			int b = (y1192 + 2066 * u);
+
+			if (r < 0)                  r = 0;               else if (r > 262143)
+				r = 262143;
+			if (g < 0)                  g = 0;               else if (g > 262143)
+				g = 262143;
+			if (b < 0)                  b = 0;               else if (b > 262143)
+				b = 262143;
+			rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
+		}
 		}
 	}
 }
