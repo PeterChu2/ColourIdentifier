@@ -3,10 +3,10 @@
     android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-	<SurfaceView 
-	   android:id="@+id/cameraSurfaceView" android:layout_width="match_parent"
+	<TextureView
+	   android:id="@+id/cameraTextureView" android:layout_width="match_parent"
 	   android:layout_height="match_parent">
-	</SurfaceView>
+	</TextureView>
 	<RelativeLayout
 	    android:layout_width="match_parent"
     	android:layout_height="match_parent"

@@ -29,7 +29,7 @@ public final class R {
     public static final class id {
         public static final int action_settings=0x7f08000e;
         public static final int button1=0x7f080004;
-        public static final int cameraSurfaceView=0x7f080002;
+        public static final int cameraTextureView=0x7f080002;
         public static final int colourBox=0x7f080007;
         public static final int colourText=0x7f080006;
         public static final int container=0x7f080000;
