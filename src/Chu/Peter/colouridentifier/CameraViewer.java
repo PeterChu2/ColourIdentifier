@@ -8,6 +8,7 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PreviewCallback;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.Menu;
@@ -159,21 +160,22 @@ public class CameraViewer extends Activity{
 				camera.startPreview();
 				buffer = new byte[frameWidth*frameHeight*(ImageFormat.getBitsPerPixel(cparams.getPreviewFormat()))/8];
 				camera.addCallbackBuffer(buffer);
+				queryColour.setWidth(frameWidth);
+				queryColour.setHeight(frameHeight);
 				camera.setPreviewCallbackWithBuffer(new PreviewCallback() {
 					@Override
 					public void onPreviewFrame(byte[] data, Camera camera) {
 
+						
 						index=frameWidth*(frameHeight-crosshairs.getx())+crosshairs.gety();
 
 						if ((index <= 0)||(index > frameHeight*frameWidth))
 						{
 							index=1;
 						}
-						try{
-							queryColour.createRawSQL(data, frameWidth, frameHeight, index);
-						}
-						catch(IndexOutOfBoundsException e){
-						}
+						queryColour.setIndex(index);
+						queryColour.setData(data);
+						
 						colourText.setText(queryColour.getText());
 
 						camera.addCallbackBuffer(data);
@@ -353,4 +355,6 @@ public class CameraViewer extends Activity{
 			return super.onOptionsItemSelected(item);
 		}
 	} // end method onOptionsItemSelected
+	
+	
 }
