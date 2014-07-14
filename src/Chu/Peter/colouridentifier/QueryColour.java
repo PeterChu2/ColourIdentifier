@@ -61,15 +61,17 @@ public class QueryColour implements Runnable{
 		{
 			if ( data != null )
 			{
-				createRawSQL(data, width, height, index);
+				createRawSQL();
 				refreshStatus();
 			}
+			
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 		}
 	}
 	
@@ -96,7 +98,7 @@ public class QueryColour implements Runnable{
 	{
 		return colourText;
 	}
-	public void createRawSQL(byte[] data, int width, int height, int index)
+	public void createRawSQL()
 	{
 		if (first==true)
 		{rgb = new int[width*height];first = false;}
