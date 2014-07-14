@@ -136,6 +136,7 @@ public class CameraViewer extends Activity{
 				refreshButton.setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
+						queryColour.createRawSQL();
 						queryColour.refreshStatus();
 					}
 				});
