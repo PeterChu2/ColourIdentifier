@@ -13,5 +13,6 @@
     <string name="threesecs">3 Seconds</string>
     <string name="twosecs">2 Seconds</string>
     <string name="refresh">Refresh Button</string>
+    <string name="clearLog">Clear Log</string>
 
 </resources>
