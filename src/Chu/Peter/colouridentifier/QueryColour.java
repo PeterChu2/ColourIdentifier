@@ -18,6 +18,28 @@ public class QueryColour implements Runnable{
 	private int sleepTime=2000;
 	private ColourBox colourBox;
 	private int colour;
+	private byte[] data;
+	private int width;
+	private int height;
+	private int index;
+	
+	
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+
+	public void setData(byte[] data){
+		this.data = data;
+	}
+	
 
 	public void setSleepTime(int sleepTime)
 	{
@@ -37,7 +59,11 @@ public class QueryColour implements Runnable{
 		db=dbHelper.getDb();
 		while(isRunning==true)
 		{
-			refreshStatus();
+			if ( data != null )
+			{
+				createRawSQL(data, width, height, index);
+				refreshStatus();
+			}
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e) {
