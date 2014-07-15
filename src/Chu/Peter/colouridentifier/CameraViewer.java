@@ -2,15 +2,18 @@ package Chu.Peter.colouridentifier;
 
 import java.io.IOException;
 import android.app.Activity;
+import android.database.Cursor;
 import android.graphics.ImageFormat;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PreviewCallback;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TextureView;
@@ -22,7 +25,9 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 import android.widget.ZoomControls;
 
@@ -36,6 +41,7 @@ public class CameraViewer extends Activity{
 	private ToggleButton flashButton;
 	private ZoomControls zoomControls;
 	private ImageView refreshButton;
+	private ImageView logButton;
 	private int zoom=5;
 	private int maxZoom;
 	private ColourBox colourBox;
@@ -50,6 +56,10 @@ public class CameraViewer extends Activity{
 	private boolean manualMode;
 	private SurfaceTextureListener surfaceTextureListener;
 	private byte[] buffer;
+	private DatabaseConnector dc;
+	private ListView logListView;
+	private CustomAdapter colourAdapter;
+	private Cursor cursor;
 
 	@Override
 	public void onCreate(Bundle bundle)
@@ -68,14 +78,26 @@ public class CameraViewer extends Activity{
 		touchListener=new CameraTouchListener(crosshairs);
 		textureView=(TextureView) findViewById(R.id.cameraTextureView);
 		textureView.setOnTouchListener(touchListener);
-		//get the surfacetexture from the textureView and add listener
+		//get the Surface Texture from the textureView and add listener
 		surfaceTexture =textureView.getSurfaceTexture();
 		textureView.setSurfaceTextureListener(surfaceTextureListener);
 		flashButton=(ToggleButton) findViewById(R.id.button1);
 		zoomControls = (ZoomControls) findViewById(R.id.zoomControls);
 		refreshButton = (ImageView) findViewById(R.id.refreshButton);
+		logButton = (ImageView) findViewById(R.id.logButton);
 		colourText = (TextView) findViewById(R.id.colourText);
-		queryColour = new QueryColour(this,colourBox);
+		queryColour = new QueryColour(this);
+		dc = new DatabaseConnector(this);
+	    // Set the ViewPager adapter
+	    ViewPagerAdapter adapter = new ViewPagerAdapter();
+	    ViewPager pager = (ViewPager) findViewById(R.id.pager);
+	    pager.setAdapter(adapter);
+	    logListView = (ListView) findViewById(R.id.logListView);
+		colourAdapter = new CustomAdapter(CameraViewer.this, cursor, 0);
+		logListView.setAdapter(colourAdapter);
+		dc.open();
+		populateListViewFromDB();
+		dc.close();
 
 		surfaceTextureListener =
 				new SurfaceTextureListener()
@@ -167,7 +189,7 @@ public class CameraViewer extends Activity{
 					@Override
 					public void onPreviewFrame(byte[] data, Camera camera) {
 
-						
+
 						index=frameWidth*(frameHeight-crosshairs.getx())+crosshairs.gety();
 
 						if ((index <= 0)||(index > frameHeight*frameWidth))
@@ -176,12 +198,27 @@ public class CameraViewer extends Activity{
 						}
 						queryColour.setIndex(index);
 						queryColour.setData(data);
-						
-						colourText.setText(queryColour.getText());
+
 
 						camera.addCallbackBuffer(data);
 					}
 				});
+				logButton.setOnClickListener(new View.OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						dc.open();
+						dc.insertRecord((String) colourText.getText(), String.format("#%06X", (0xFFFFFF & colourBox.getP().getColor())), colourBox.getP().getColor());
+						populateListViewFromDB();
+						colourAdapter.notifyDataSetChanged();
+						dc.close();
+						Toast t = Toast.makeText(CameraViewer.this, "Colour logged! Swipe left to view log!", Toast.LENGTH_SHORT);
+						t.setGravity(Gravity.CENTER, 0, 0);
+						t.show();
+					}
+				});
+
 			}
 
 			@Override
@@ -274,12 +311,13 @@ public class CameraViewer extends Activity{
 
 	@Override
 	protected void onDestroy() {
-		super.onPause();
+		super.onDestroy();
 		// release the camera
 		try{
 			camera.setPreviewCallback(null);
 			camera.release();
 			camera = null;
+			dc.close();
 		}
 		catch(NullPointerException e)
 		{
@@ -352,10 +390,65 @@ public class CameraViewer extends Activity{
 			queryColour.setIsRunning(false);
 			manualMode = true;
 			return true;
+		case R.id.clearLog:
+			dc.open();
+			dc.deleteRecords();
+			populateListViewFromDB();
+			dc.close();
+			colourAdapter.notifyDataSetChanged();
+			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+		
 	} // end method onOptionsItemSelected
 	
+	@Override
+	protected void onStop() 
+	{
+		super.onStop();
+		try{
+			dc.close();
+			cursor.close();
+		}
+		catch(NullPointerException e)
+		{
+			e.printStackTrace();
+		}
+	} // end method onStop
 	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+	    return super.onPrepareOptionsMenu(menu);
+	}
+	
+    class ViewPagerAdapter extends PagerAdapter {
+
+        public Object instantiateItem(View collection, int position) {
+
+            int resId = 0;
+            switch (position) {
+            case 0:
+                resId = R.id.frameLayout;
+                break;
+            case 1:
+                resId = R.id.logListView;
+                break;
+            }
+            return findViewById(resId);
+        }
+        @Override
+        public int getCount() {
+            return 2;
+        }
+
+        @Override
+        public boolean isViewFromObject(View arg0, Object arg1) {
+            return arg0 == ((View) arg1);
+        }
+    }
+    private void populateListViewFromDB() {
+		cursor = dc.getAllRecords();
+	    colourAdapter.changeCursor(cursor);
+    }
 }
