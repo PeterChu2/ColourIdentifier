@@ -32,8 +32,7 @@ import android.widget.ToggleButton;
 import android.widget.ZoomControls;
 
 public class CameraViewer extends Activity{
-	private TextureView textureView; // displays camera preview     
-	private android.graphics.SurfaceTexture surfaceTexture; // manages textureView changes
+	private TextureView textureView; // displays camera preview
 	private boolean isPreviewing; // true if camera preview is on
 	private Camera camera; // captures image data
 	private CameraTouchListener touchListener;
@@ -60,6 +59,7 @@ public class CameraViewer extends Activity{
 	private ListView logListView;
 	private CustomAdapter colourAdapter;
 	private Cursor cursor;
+	SurfaceTexture surfaceTexture;
 
 	@Override
 	public void onCreate(Bundle bundle)
@@ -78,8 +78,6 @@ public class CameraViewer extends Activity{
 		touchListener=new CameraTouchListener(crosshairs);
 		textureView=(TextureView) findViewById(R.id.cameraTextureView);
 		textureView.setOnTouchListener(touchListener);
-		//get the Surface Texture from the textureView and add listener
-		surfaceTexture =textureView.getSurfaceTexture();
 		textureView.setSurfaceTextureListener(surfaceTextureListener);
 		flashButton=(ToggleButton) findViewById(R.id.button1);
 		zoomControls = (ZoomControls) findViewById(R.id.zoomControls);
@@ -127,7 +125,6 @@ public class CameraViewer extends Activity{
 				frameHeight = cparams.getPreviewSize().height;
 				frameWidth = cparams.getPreviewSize().width;
 				camera.setDisplayOrientation(90);
-				camera.setParameters(cparams);
 				maxZoom=cparams.getMaxZoom();
 				zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
 					@Override
@@ -178,31 +175,12 @@ public class CameraViewer extends Activity{
 						}
 						camera.setParameters(cparams);
 					}
-
 				});
-				camera.startPreview();
 				buffer = new byte[frameWidth*frameHeight*(ImageFormat.getBitsPerPixel(cparams.getPreviewFormat()))/8];
 				camera.addCallbackBuffer(buffer);
 				queryColour.setWidth(frameWidth);
 				queryColour.setHeight(frameHeight);
-				camera.setPreviewCallbackWithBuffer(new PreviewCallback() {
-					@Override
-					public void onPreviewFrame(byte[] data, Camera camera) {
-
-
-						index=frameWidth*(frameHeight-crosshairs.getx())+crosshairs.gety();
-
-						if ((index <= 0)||(index > frameHeight*frameWidth))
-						{
-							index=1;
-						}
-						queryColour.setIndex(index);
-						queryColour.setData(data);
-
-
-						camera.addCallbackBuffer(data);
-					}
-				});
+				camera.setPreviewCallbackWithBuffer(new CameraCallback());
 				logButton.setOnClickListener(new View.OnClickListener() {
 
 					@Override
@@ -218,7 +196,6 @@ public class CameraViewer extends Activity{
 						t.show();
 					}
 				});
-
 			}
 
 			@Override
@@ -235,13 +212,12 @@ public class CameraViewer extends Activity{
 				crosshairs.setx(startingPoint.x/2);
 				crosshairs.sety(startingPoint.y/2);
 
-
 				camera.setDisplayOrientation(90);
 				index=frameWidth*(frameHeight-crosshairs.getx())+crosshairs.gety();
 
 				try
 				{
-					camera.setPreviewTexture(surfaceTexture); // display using holder
+					camera.setPreviewTexture(surface); // display using holder
 				} // end try
 				catch (IOException e) 
 				{
@@ -280,7 +256,6 @@ public class CameraViewer extends Activity{
 		{
 			e.printStackTrace();
 		}
-
 		queryColour.setIsRunning(false);
 		try
 		{    
@@ -296,10 +271,16 @@ public class CameraViewer extends Activity{
 		// TODO Auto-generated method stub
 		camera=Camera.open();
 
-
 		super.onResume();
 		textureView.setSurfaceTextureListener(surfaceTextureListener);
 		queryColour.setIsRunning(true);
+		surfaceTexture=textureView.getSurfaceTexture();
+		try {
+			camera.setPreviewTexture(surfaceTexture);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		camera.setDisplayOrientation(90);
 		camera.startPreview();
 		if(manualMode == false)
 		{
@@ -307,6 +288,7 @@ public class CameraViewer extends Activity{
 			qc.start();
 		}
 		isPreviewing = true;
+		camera.setPreviewCallbackWithBuffer(new CameraCallback());
 	}
 
 	@Override
@@ -417,11 +399,6 @@ public class CameraViewer extends Activity{
 		}
 	} // end method onStop
 	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-	    return super.onPrepareOptionsMenu(menu);
-	}
-	
     class ViewPagerAdapter extends PagerAdapter {
 
         public Object instantiateItem(View collection, int position) {
@@ -450,5 +427,20 @@ public class CameraViewer extends Activity{
     private void populateListViewFromDB() {
 		cursor = dc.getAllRecords();
 	    colourAdapter.changeCursor(cursor);
+    }
+    private class CameraCallback implements PreviewCallback {
+		@Override
+		public void onPreviewFrame(byte[] data, Camera camera) {
+			index=frameWidth*(frameHeight-crosshairs.getx())+crosshairs.gety();
+
+			if ((index <= 0)||(index > frameHeight*frameWidth))
+			{
+				index=1;
+			}
+			queryColour.setIndex(index);
+			queryColour.setData(data);
+			camera.addCallbackBuffer(data);
+			
+		}
     }
 }

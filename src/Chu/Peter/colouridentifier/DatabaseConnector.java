@@ -44,7 +44,7 @@ public class DatabaseConnector {
 		newRecord.put("colourName", colourName);
 		newRecord.put("hex", hex);
 		newRecord.put("colour", colour);
-		database.insert("ColourLog", null, newRecord);
+		database.insert(DATABASE_NAME, null, newRecord);
 	} // end method insertRecord
 
 	// return a Cursor with all contact information in the database
@@ -59,19 +59,19 @@ public class DatabaseConnector {
 	public Cursor getOneRecord(long id) 
 	{
 		return database.query(
-				"ColourLog", new String[]{"colourName","hex","colour"}, "_id=" + id, null, null, null, null);
+				DATABASE_NAME, new String[]{"colourName","hex","colour"}, "_id=" + id, null, null, null, null);
 	} // end method getOneRecord
 
 	public void deleteRecords()
 	{
-		database.delete("colourLog",null,null);
+		database.delete(DATABASE_NAME,null,null);
 	}
 
 	// delete the contact specified by the given String name
 	public void deleteRecord(long id)
 	{
 		open(); // open the database
-		database.delete("ColourLog", "_id=" + id, null);
+		database.delete(DATABASE_NAME, "_id=" + id, null);
 		close(); // close the database
 	} // end method deleteContact
 
@@ -89,7 +89,7 @@ public class DatabaseConnector {
 		public void onCreate(SQLiteDatabase db) 
 		{
 			// query to create a new table named contacts
-			String createQuery = "CREATE TABLE ColourLog" +
+			String createQuery = "CREATE TABLE " + DATABASE_NAME +
 					"(_id integer primary key autoincrement," +
 					"colourName TEXT, hex TEXT,"+" colour integer);";
 			db.execSQL(createQuery); // execute the query
@@ -98,7 +98,6 @@ public class DatabaseConnector {
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			// TODO Auto-generated method stub
-
 		}
 	} // end class DatabaseOpenHelper
 } // end class DatabaseConnector
