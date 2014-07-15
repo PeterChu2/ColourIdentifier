@@ -25,8 +25,6 @@ public class QueryColour implements Runnable{
 	private int height;
 	private int index;
 
-
-
 	public void setWidth(int width) {
 		this.width = width;
 	}
@@ -42,7 +40,6 @@ public class QueryColour implements Runnable{
 	public void setData(byte[] data){
 		this.data = data;
 	}
-
 
 	public void setSleepTime(int sleepTime)
 	{
