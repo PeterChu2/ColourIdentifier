@@ -1,4 +1,4 @@
-package Chu.ForCHUApps.Identi_Color;
+package com.forCHUApps.identi_Color;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.CursorAdapter;

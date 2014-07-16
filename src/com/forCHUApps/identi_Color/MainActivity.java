@@ -1,4 +1,4 @@
-package Chu.ForCHUApps.Identi_Color;
+package com.forCHUApps.identi_Color;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

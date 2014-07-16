@@ -1,4 +1,4 @@
-package Chu.ForCHUApps.Identi_Color;
+package com.forCHUApps.identi_Color;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
