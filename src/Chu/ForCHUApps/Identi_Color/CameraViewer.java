@@ -1,4 +1,4 @@
-package Chu.Peter.colouridentifier;
+package Chu.ForCHUApps.Identi_Color;
 
 import java.io.IOException;
 import android.app.Activity;
@@ -60,6 +60,7 @@ public class CameraViewer extends Activity{
 	private CustomAdapter colourAdapter;
 	private Cursor cursor;
 	SurfaceTexture surfaceTexture;
+	private ViewPager pager;
 
 	@Override
 	public void onCreate(Bundle bundle)
@@ -88,7 +89,7 @@ public class CameraViewer extends Activity{
 		dc = new DatabaseConnector(this);
 	    // Set the ViewPager adapter
 	    ViewPagerAdapter adapter = new ViewPagerAdapter();
-	    ViewPager pager = (ViewPager) findViewById(R.id.pager);
+	    pager = (ViewPager) findViewById(R.id.pager);
 	    pager.setAdapter(adapter);
 	    logListView = (ListView) findViewById(R.id.logListView);
 		colourAdapter = new CustomAdapter(CameraViewer.this, cursor, 0);
@@ -164,7 +165,6 @@ public class CameraViewer extends Activity{
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
-						// TODO Auto-generated method stub
 						if(isChecked)
 						{
 							cparams.setFlashMode(Parameters.FLASH_MODE_TORCH);
@@ -185,7 +185,6 @@ public class CameraViewer extends Activity{
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
 						dc.open();
 						dc.insertRecord((String) colourText.getText(), String.format("#%06X", (0xFFFFFF & colourBox.getP().getColor())), colourBox.getP().getColor());
 						populateListViewFromDB();
@@ -229,12 +228,9 @@ public class CameraViewer extends Activity{
 
 			@Override
 			public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-				// TODO Auto-generated method stub
 			}
 			@Override
 			public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-				// TODO Auto-generated method stub
-
 				if(isPreviewing)
 				{
 					isPreviewing = false;
@@ -268,7 +264,6 @@ public class CameraViewer extends Activity{
 	}
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		camera=Camera.open();
 
 		super.onResume();
@@ -399,6 +394,18 @@ public class CameraViewer extends Activity{
 		}
 	} // end method onStop
 	
+	@Override
+    public void onBackPressed() {
+        if (pager.getCurrentItem() == 0) {
+            // If the user is currently looking at the first step, allow the system to handle the
+            // Back button. This calls finish() on this activity and pops the back stack.
+            super.onBackPressed();
+        } else {
+            // Otherwise, select the previous step.
+            pager.setCurrentItem(pager.getCurrentItem() - 1);
+        }
+    }
+	
     class ViewPagerAdapter extends PagerAdapter {
 
         public Object instantiateItem(View collection, int position) {
@@ -440,7 +447,6 @@ public class CameraViewer extends Activity{
 			queryColour.setIndex(index);
 			queryColour.setData(data);
 			camera.addCallbackBuffer(data);
-			
 		}
     }
 }

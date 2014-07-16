@@ -67,7 +67,7 @@
 					        android:layout_weight="4"
 					        style="@style/colourTextShadow"
 					        android:gravity="center"/>
-						<Chu.Peter.colouridentifier.ColourBox
+						<Chu.ForCHUApps.Identi_Color.ColourBox
 						    android:id="@+id/colourBox"
 						    android:layout_width="0dp"
 						    android:layout_height="match_parent"

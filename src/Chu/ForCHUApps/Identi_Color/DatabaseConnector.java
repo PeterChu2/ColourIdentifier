@@ -1,4 +1,4 @@
-package Chu.Peter.colouridentifier;
+package Chu.ForCHUApps.Identi_Color;
 
 import android.content.ContentValues;
 import android.content.Context;

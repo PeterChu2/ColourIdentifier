@@ -1,4 +1,4 @@
-package Chu.Peter.colouridentifier;
+package Chu.ForCHUApps.Identi_Color;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

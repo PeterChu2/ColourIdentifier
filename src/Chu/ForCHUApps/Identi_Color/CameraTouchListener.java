@@ -1,4 +1,4 @@
-package Chu.Peter.colouridentifier;
+package Chu.ForCHUApps.Identi_Color;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
